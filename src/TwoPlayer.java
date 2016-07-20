@@ -40,7 +40,7 @@ public class TwoPlayer extends Applet {
 		
 		buffer = createImage(getSize().width, getSize().height);
 		g2d = (Graphics2D) buffer.getGraphics();
-		ball = new Ball(getWidth()/2.0, getHeight()/2.0, MAX_VELOCITY, 20, JPINK);
+		ball = new Ball(getWidth()/2.0-10, getHeight()/2.0-10, MAX_VELOCITY, 20, JPINK);
 		leftDeflector = new Deflector(ball.getSize()*2, getHeight()/2-50, ball.getSize(), 100);
 		rightDeflector = new Deflector(getWidth()-(ball.getSize()*3), getHeight()/2-50, ball.getSize(), 100);
 		leftPlayerScore = 0;

@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.Timer;
 
-public class SinglePlayer extends Applet {
+public class FriendlyTwoPlayer extends Applet {
 	/**
 	 * 
 	 */
@@ -17,7 +17,7 @@ public class SinglePlayer extends Applet {
 	private static final short FPS = 25;
 	private static final short DELAY = 1000 / FPS;
 	private static final short[] VELOCITY_CONST = {125,250,375,500,1000};
-	private static final double MAX_VELOCITY = (double) VELOCITY_CONST[3] / FPS;
+	private static final double MAX_VELOCITY = (double) VELOCITY_CONST[2] / FPS;
 	private static final Color JPINK = new Color(255,0,128);
 	
 	private Image buffer;
@@ -26,12 +26,12 @@ public class SinglePlayer extends Applet {
 	private Deflector leftDeflector;
 	private Deflector rightDeflector;
 	private short leftPlayerScore;
-	//private short rightPlayerScore;
+	private short rightPlayerScore;
 	private long rallyLength;
-	
+
 	
 	public void init() {
-
+		
 		setSize(
 				(int)Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 				(int)Toolkit.getDefaultToolkit().getScreenSize().getHeight());
@@ -40,11 +40,11 @@ public class SinglePlayer extends Applet {
 		
 		buffer = createImage(getSize().width, getSize().height);
 		g2d = (Graphics2D) buffer.getGraphics();
-		ball = new Ball(getWidth()/2.0-10, getHeight()/2.0-10, MAX_VELOCITY, MAX_VELOCITY, 20, JPINK);
+		ball = new Ball(getWidth()/2.0-10, getHeight()/2.0-10, MAX_VELOCITY, 20, JPINK);
 		leftDeflector = new Deflector(ball.getSize()*2, getHeight()/2-50, ball.getSize(), 100);
-		rightDeflector = new Deflector(getWidth()-(ball.getSize()*3), 0, ball.getSize(), getHeight());
+		rightDeflector = new Deflector(getWidth()-(ball.getSize()*3), getHeight()/2-50, ball.getSize(), 100);
 		leftPlayerScore = 0;
-		//rightPlayerScore = 0;
+		rightPlayerScore = 0;
 		rallyLength = 0;
 		
 		ActionListener taskPerformer = new ActionListener() {
@@ -93,10 +93,12 @@ public class SinglePlayer extends Applet {
 
 	public void paint(Graphics g) {
 		
-		if(leftPlayerScore >= 1) {
-			//this.stop();
-			//this.destroy();
+		if(leftPlayerScore >= 1 || rightPlayerScore >= 1) {
 			return;
+		}
+		
+		if(ball == null) {
+			reset();
 		}
 		
 		
@@ -110,17 +112,16 @@ public class SinglePlayer extends Applet {
 			ball.setYVelocity(-ball.getYVelocity());
 		}
 		
-		if(ball.getX() <= ball.getSize()) {
-			leftPlayerScore++;
-			//System.out.println(leftPlayerScore);
+		if(ball.getX() <= 0) {
+			rightPlayerScore++;
 			reset();
 		}
 		
-		if(ball.getX() >= getSize().getWidth()-(2*ball.getSize())) {
+		if(ball.getX() >= getSize().getWidth()) {
+			leftPlayerScore++;
 			reset();
 		}
 
-		
 		if(ball.getX() <= (leftDeflector.getX()+leftDeflector.getWidth()) && (ball.getX() >= leftDeflector.getX())) {
 			if(ball.getY() >= (leftDeflector.getY()-ball.getSize()) && ball.getY() <= (leftDeflector.getY()+leftDeflector.getHeight())) {
 				ball.setXVelocity(Math.abs(ball.getXVelocity()));
@@ -168,8 +169,10 @@ public class SinglePlayer extends Applet {
 						)
 				);
 		
+		//drawScore();
+		
 		drawRally();
-
+		
 		g.drawImage(buffer, 0, 0, null);
 
 	}
@@ -179,8 +182,8 @@ public class SinglePlayer extends Applet {
     	switch(c) {
     		case 'w': leftDeflector.moveUp(leftDeflector.getHeight()/2); return;
     		case 's': leftDeflector.moveDown(leftDeflector.getHeight()/2); return;
-    		//case 'o': rightDeflector.moveUp(rightDeflector.getHeight()/2); return;
-    		//case 'l': rightDeflector.moveDown(rightDeflector.getHeight()/2, (int) getHeight()); return;
+    		case 'o': rightDeflector.moveUp(rightDeflector.getHeight()/2); return;
+    		case 'l': rightDeflector.moveDown(rightDeflector.getHeight()/2); return;
     	}
     	leftDeflector.checkBounds(getWidth(), getHeight());
     	rightDeflector.checkBounds(getWidth(), getHeight());
@@ -188,8 +191,23 @@ public class SinglePlayer extends Applet {
     
     
     public void reset() {
-    	ball = new Ball(getWidth()/2.0, getHeight()/2.0, MAX_VELOCITY, MAX_VELOCITY, 20, JPINK);
+    	ball = new Ball(getWidth()/2.0, getHeight()/2.0, MAX_VELOCITY, 20, JPINK);
     }
+    
+    
+    public void drawScore() {
+    	
+    	String temp = "Player 1: " + leftPlayerScore + "     " + "     " + "     " + "Player 2: " + rightPlayerScore; 
+		
+	    FontMetrics metrics = g2d.getFontMetrics(getFont());
+	    
+	    int x = (int) ((getWidth() - metrics.stringWidth(temp)) / 2.0);
+	    int y = 50;
+	    
+	    g2d.setPaint(JPINK);
+	    g2d.drawString(temp, x, (int) (y-(metrics.getAscent())));
+	    
+	}
     
     public void drawRally() {
     	String temp = "Rally Length: " + rallyLength; 

@@ -24,7 +24,7 @@ public class Deflector {
 		this.y -= distance;
 	}
 	
-	public void moveDown(int distance, int max) {
+	public void moveDown(int distance) {
 		this.y += distance;
 	}
 	
@@ -32,7 +32,7 @@ public class Deflector {
 		this.x -= distance;
 	}
 	
-	public void moveRight(int distance, int max) {
+	public void moveRight(int distance) {
 		this.x += distance;
 	}
 	

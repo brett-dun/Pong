@@ -122,14 +122,14 @@ public class SinglePlayer extends Applet {
 
 		
 		if(ball.getX() <= (leftDeflector.getX()+leftDeflector.getWidth()) && (ball.getX() >= leftDeflector.getX())) {
-			if(ball.getY() >= (leftDeflector.getY()-ball.getSize()) && ball.getY() <= (leftDeflector.getY()+leftDeflector.getHeight()+ball.getSize())) {
+			if(ball.getY() >= (leftDeflector.getY()-ball.getSize()) && ball.getY() <= (leftDeflector.getY()+leftDeflector.getHeight())) {
 				ball.setXVelocity(Math.abs(ball.getXVelocity()));
 				rallyLength++;
 			}
 		}
 		
-		if(ball.getX() <= (rightDeflector.getX()+rightDeflector.getWidth()) && (ball.getX() >= rightDeflector.getX())) {
-			if(ball.getY() >= (rightDeflector.getY()-ball.getSize()) && ball.getY() <= (rightDeflector.getY()+rightDeflector.getHeight()+ball.getSize())) {
+		if(ball.getX() <= (rightDeflector.getX()+rightDeflector.getWidth()) && (ball.getX() >= rightDeflector.getX()-ball.getSize())) {
+			if(ball.getY() >= (rightDeflector.getY()-ball.getSize()) && ball.getY() <= (rightDeflector.getY()+rightDeflector.getHeight())) {
 				ball.setXVelocity(-Math.abs(ball.getXVelocity()));
 				rallyLength++;
 			}
@@ -178,7 +178,7 @@ public class SinglePlayer extends Applet {
     public void move(char c) {
     	switch(c) {
     		case 'w': leftDeflector.moveUp(leftDeflector.getHeight()/2); return;
-    		case 's': leftDeflector.moveDown(leftDeflector.getHeight()/2, (int) getHeight()); return;
+    		case 's': leftDeflector.moveDown(leftDeflector.getHeight()/2); return;
     		//case 'o': rightDeflector.moveUp(rightDeflector.getHeight()/2); return;
     		//case 'l': rightDeflector.moveDown(rightDeflector.getHeight()/2, (int) getHeight()); return;
     	}

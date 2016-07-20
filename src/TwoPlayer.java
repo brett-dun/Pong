@@ -9,8 +9,7 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.Timer;
 
-public class Tester extends Applet {
-	
+public class TwoPlayer extends Applet {
 	/**
 	 * 
 	 */
@@ -18,7 +17,7 @@ public class Tester extends Applet {
 	private static final short FPS = 25;
 	private static final short DELAY = 1000 / FPS;
 	private static final short[] VELOCITY_CONST = {125,250,375,500,1000};
-	private static final double MAX_VELOCITY = (double) VELOCITY_CONST[0] / FPS;
+	private static final double MAX_VELOCITY = (double) VELOCITY_CONST[2] / FPS;
 	private static final Color JPINK = new Color(255,0,128);
 	
 	private Image buffer;
@@ -26,33 +25,26 @@ public class Tester extends Applet {
 	private Ball ball;
 	private Deflector leftDeflector;
 	private Deflector rightDeflector;
-	private Deflector topDeflector;
-	private Deflector bottomDeflector;
 	private short leftPlayerScore;
 	private short rightPlayerScore;
-	private short topPlayerScore;
-	private short bottomPlayerScore;
+
 	
 	public void init() {
 
 		//this.setLocation(100, 100);
 		setSize(
-				(int)Toolkit.getDefaultToolkit().getScreenSize().getHeight(),
+				(int)Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
 				(int)Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		setBackground(Color.black);
 		setVisible(true);
 		
-		buffer = createImage(getHeight(), getHeight());
+		buffer = createImage(getSize().width, getSize().height);
 		g2d = (Graphics2D) buffer.getGraphics();
 		ball = new Ball(getWidth()/2.0, getHeight()/2.0, MAX_VELOCITY, 20, JPINK);
 		leftDeflector = new Deflector(ball.getSize()*2, getHeight()/2-50, ball.getSize(), 100);
 		rightDeflector = new Deflector(getWidth()-(ball.getSize()*3), getHeight()/2-50, ball.getSize(), 100);
-		topDeflector = new Deflector(getWidth()/2-50, ball.getSize()*2, 100, ball.getSize());
-		bottomDeflector = new Deflector(getWidth()/2-50, getHeight()-(ball.getSize()*3), 100, ball.getSize());
 		leftPlayerScore = 0;
 		rightPlayerScore = 0;
-		topPlayerScore = 0;
-		bottomPlayerScore = 0;
 		
 		ActionListener taskPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -76,7 +68,7 @@ public class Tester extends Applet {
 			@Override
 		    public void keyPressed(KeyEvent e) {  
 				char temp = e.getKeyChar();
-		    	if(temp == 'q' || temp == 'a' || temp == '\\' || temp == '\n' || temp == 'x' || temp == 'c' || temp == ',' || temp == '.') {
+		    	if(temp == 'w' || temp == 's' || temp == 'o' || temp == 'l') {
 		    		move(temp);
 		    	}
 		    }
@@ -100,7 +92,7 @@ public class Tester extends Applet {
 
 	public void paint(Graphics g) {
 		
-		if(leftPlayerScore >= 10 || rightPlayerScore >= 10 || topPlayerScore >= 10 || bottomPlayerScore >= 10) {
+		if(leftPlayerScore >= 5 || rightPlayerScore >= 5) {
 			//this.stop();
 			//this.destroy();
 			return;
@@ -118,37 +110,19 @@ public class Tester extends Applet {
 		ball.updateX();
 		//ball.findAngle();
 
-		/*if(ball.getY()>=getHeight()-ball.getSize() || ball.getY()<=0) {
+		if(ball.getY()>=getHeight()-ball.getSize() || ball.getY()<=0) {
 			ball.setYVelocity(-ball.getYVelocity());
-		}*/
+		}
 		
 		if(ball.getX() <= 0) {
 			rightPlayerScore++;
-			topPlayerScore++;
-			bottomPlayerScore++;
 			//System.out.println("L: " + leftPlayerScore);
 			reset();
 		}
 		
-		if(ball.getX() >= getWidth()) {
+		if(ball.getX() >= getSize().getWidth()) {
 			leftPlayerScore++;
-			topPlayerScore++;
-			bottomPlayerScore++;
 			//System.out.println("R: " + rightPlayerScore);
-			reset();
-		}
-		
-		if(ball.getY() <= 0) {
-			leftPlayerScore++;
-			rightPlayerScore++;
-			bottomPlayerScore++;
-			reset();
-		}
-		
-		if(ball.getY() >= getHeight()) {
-			leftPlayerScore++;
-			rightPlayerScore++;
-			topPlayerScore++;
 			reset();
 		}
 
@@ -156,33 +130,19 @@ public class Tester extends Applet {
 			this.ball.setXVelocity(-this.ball.getXVelocity());
 		}*/
 		if(ball.getX() <= (leftDeflector.getX()+leftDeflector.getWidth()) && (ball.getX() >= leftDeflector.getX())) {
-			if(ball.getY() >= (leftDeflector.getY()-ball.getSize()) && ball.getY() <= (leftDeflector.getY()+leftDeflector.getHeight()+ball.getSize())) {
+			if(ball.getY() >= (leftDeflector.getY()-ball.getSize()) && ball.getY() <= (leftDeflector.getY()+leftDeflector.getHeight())) {
 				ball.setXVelocity(Math.abs(ball.getXVelocity()));
 			}
 		}
 		
-		if(ball.getX() <= (rightDeflector.getX()+rightDeflector.getWidth()) && (ball.getX() >= rightDeflector.getX())) {
-			if(ball.getY() >= (rightDeflector.getY()-ball.getSize()) && ball.getY() <= (rightDeflector.getY()+rightDeflector.getHeight()+ball.getSize())) {
-				ball.setXVelocity(-Math.abs(ball.getXVelocity()));
-			}
-		}
-		
-		if(ball.getY() >= (topDeflector.getY()-ball.getSize()) && ball.getY() <= (topDeflector.getY()+topDeflector.getHeight()+ball.getSize())) {
-			if(ball.getX() <= (topDeflector.getX()+topDeflector.getWidth()) && (topDeflector.getX() >= topDeflector.getX())) {
-				ball.setXVelocity(-Math.abs(ball.getXVelocity()));
-			}
-		}
-		
-		if(ball.getY() >= (bottomDeflector.getY()-ball.getSize()) && ball.getY() <= (bottomDeflector.getY()+bottomDeflector.getHeight()+ball.getSize())) {
-			if(ball.getX() <= (bottomDeflector.getX()+bottomDeflector.getWidth()) && (ball.getX() >= bottomDeflector.getX())) {
+		if(ball.getX() <= (rightDeflector.getX()+rightDeflector.getWidth()) && (ball.getX() >= rightDeflector.getX()-ball.getSize())) {
+			if(ball.getY() >= (rightDeflector.getY()-ball.getSize()) && ball.getY() <= (rightDeflector.getY()+rightDeflector.getHeight())) {
 				ball.setXVelocity(-Math.abs(ball.getXVelocity()));
 			}
 		}
 		
 		leftDeflector.checkBounds(getWidth(), getHeight());
 		rightDeflector.checkBounds(getWidth(), getHeight());
-		topDeflector.checkBounds(getWidth(), getHeight());
-		bottomDeflector.checkBounds(getWidth(), getHeight());
 			
 		g2d.setPaint(ball.getMyColor());
 		g2d.fill(
@@ -214,29 +174,9 @@ public class Tester extends Applet {
 						)
 				);
 		
-		g2d.setPaint(topDeflector.getColor());
-		g2d.fill(
-				new Rectangle2D.Double(
-						topDeflector.getX(),
-						topDeflector.getY(),
-						topDeflector.getWidth(),
-						topDeflector.getHeight()
-						)
-				);
-		
-		g2d.setPaint(bottomDeflector.getColor());
-		g2d.fill(
-				new Rectangle2D.Double(
-						bottomDeflector.getX(),
-						bottomDeflector.getY(),
-						bottomDeflector.getWidth(),
-						bottomDeflector.getHeight()
-						)
-				);
-		
 		drawScore();
 		
-		if(leftPlayerScore >= 10 || rightPlayerScore >= 10 || topPlayerScore >= 10 || bottomPlayerScore >= 10) {
+		if(leftPlayerScore >= 5 || rightPlayerScore >= 5) {
 			drawWinner();
 		}
 		
@@ -247,22 +187,13 @@ public class Tester extends Applet {
 	
     public void move(char c) {
     	switch(c) {
-    		case 'q': leftDeflector.moveUp(leftDeflector.getHeight()/2); return;
-    		case 'a': leftDeflector.moveDown(leftDeflector.getHeight()/2); return;
-    		
-    		case '\\': rightDeflector.moveUp(rightDeflector.getHeight()/2); return;
-    		case '\n': rightDeflector.moveDown(rightDeflector.getHeight()/2); return;
-    		
-    		case 'x': topDeflector.moveLeft(topDeflector.getWidth()/2); return;
-    		case 'c': topDeflector.moveRight(topDeflector.getWidth()/2); return;
-    		
-    		case ',': bottomDeflector.moveLeft(bottomDeflector.getWidth()/2); return;
-    		case '.': bottomDeflector.moveRight(bottomDeflector.getWidth()/2); return;
+    		case 'w': leftDeflector.moveUp(leftDeflector.getHeight()/2); return;
+    		case 's': leftDeflector.moveDown(leftDeflector.getHeight()/2); return;
+    		case 'o': rightDeflector.moveUp(rightDeflector.getHeight()/2); return;
+    		case 'l': rightDeflector.moveDown(rightDeflector.getHeight()/2); return;
     	}
     	leftDeflector.checkBounds(getWidth(), getHeight());
     	rightDeflector.checkBounds(getWidth(), getHeight());
-    	topDeflector.checkBounds(getWidth(), getHeight());
-    	bottomDeflector.checkBounds(getWidth(), getHeight());
     }
     
     
@@ -273,7 +204,7 @@ public class Tester extends Applet {
     
     public void drawScore() {
     	
-    	String temp = "Player 1: " + leftPlayerScore + "     " + "     " + "     " + "Player 2: " + rightPlayerScore + "     " + "     " + "     " + "Player 3: " + topPlayerScore + "     " + "     " + "     " + "Player 4: " + bottomPlayerScore; 
+    	String temp = "Player 1: " + leftPlayerScore + "     " + "     " + "     " + "Player 2: " + rightPlayerScore; 
 		
 	    FontMetrics metrics = g2d.getFontMetrics(getFont());
 	    
@@ -287,7 +218,7 @@ public class Tester extends Applet {
     
     public void drawWinner() {
     	
-    	/*String temp = new String();
+    	String temp = new String();
     	
     	if(leftPlayerScore > rightPlayerScore) {
     		temp = "Player 1 Wins!!!";
@@ -301,7 +232,7 @@ public class Tester extends Applet {
 	    int y = (int) ((getHeight() - metrics.getAscent()) / 2.0);
 	    
 	    g2d.setPaint(JPINK);
-	    g2d.drawString(temp, x, (int) (y-(metrics.getAscent())));*/
+	    g2d.drawString(temp, x, (int) (y-(metrics.getAscent())));
     }
     
     
